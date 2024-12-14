@@ -42,28 +42,43 @@ def upload_image():
 
 @app.route('/process', methods=['POST'])
 def process_image():
-    file_path = os.path.join(UPLOAD_FOLDER, "drawn_expression.png")
-    if not os.path.exists(file_path):
-        return jsonify({"error": "No uploaded image found. Please upload an image first."}), 400
+    try:
+        print("Processing image...")  # Debug log
+        file_path = os.path.join(UPLOAD_FOLDER, "drawn_expression.png")
+        if not os.path.exists(file_path):
+            print("File not found:", file_path)  # Debug log
+            return jsonify({"error": "No uploaded image found. Please upload an image first."}), 400
 
-    # Segment symbols
-    symbol_imgs = segment_symbols(file_path)
-    if not symbol_imgs:
-        return jsonify({"error": "No symbols detected in the image."}), 400
+        # Segment symbols
+        print("Segmenting symbols...")  # Debug log
+        symbol_imgs = segment_symbols(file_path)
+        if not symbol_imgs:
+            print("No symbols detected!")  # Debug log
+            return jsonify({"error": "No symbols detected in the image."}), 400
 
-    # Predict all symbols
-    predictions = predict_symbols(symbol_imgs)
+        # Predict each symbol
+        predictions = []
+        for i, sym in enumerate(symbol_imgs):
+            print(f"Processing symbol {i}...")  # Debug log
+            img_preprocessed = preprocess_symbol(sym)
+            predicted_label, probs = predict_symbol(model, img_preprocessed)
+            predictions.append({"label": predicted_label, "probs": probs.tolist()})
 
-    # Extract just the predicted labels
-    predicted_labels = [label for label, _ in predictions]
+        # Evaluate the expression
+        print("Evaluating expression...")  # Debug log
+        expression_result = evaluate_expression([(p["label"], p["probs"]) for p in predictions])
 
-    # Evaluate the expression
-    expression_result = evaluate_expression(predictions)
+        print("Predictions:", predictions)  # Debug log
+        print("Evaluation Result:", expression_result)  # Debug log
 
-    return jsonify({
-        "predictions": predicted_labels,
-        "evaluation": expression_result
-    })
+        return jsonify({
+            "predictions": [p["label"] for p in predictions],
+            "evaluation": expression_result
+        })
+    except Exception as e:
+        print("Error in /process:", str(e))  # Debug log
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/static/<path:path>')
 def send_static(path):

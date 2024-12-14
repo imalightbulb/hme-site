@@ -63,8 +63,8 @@ function resizeCanvas() {
     ctx.putImageData(imageData, 0, 0);
 }
 
-// Upload the canvas
 async function uploadCanvas() {
+    console.log("Uploading canvas..."); // Debug log
     const dataURL = canvas.toDataURL('image/png');
     const response = await fetch('/upload', {
         method: 'POST',
@@ -74,29 +74,29 @@ async function uploadCanvas() {
 
     const result = await response.json();
     if (response.ok) {
-        alert('Image uploaded successfully!');
-        processImage();
+        console.log("Upload successful, result:", result); // Debug log
+        processImage(); // Trigger /process after upload
     } else {
+        console.error("Upload failed:", result.error); // Debug log
         alert('Failed to upload image: ' + result.error);
     }
 }
 
-// Process the uploaded image
+
 async function processImage() {
+    console.log("Processing image..."); // Debug log
     const response = await fetch('/process', { method: 'POST' });
     const result = await response.json();
-
     if (response.ok) {
-        const predictionsContainer = document.getElementById('predictions');
-        const evaluationContainer = document.getElementById('evaluation');
-
-        // Populate predictions as styled elements
-        predictionsContainer.innerHTML = result.predictions
-            .map((prediction) => `<div class="prediction-item">${prediction}</div>`)
-            .join("");
-
-        // Populate evaluation result
-        evaluationContainer.innerHTML = `<div class="evaluation-result">${result.evaluation}</div>`;
+        console.log("Processing result:", result); // Debug log
+        document.getElementById('result').innerHTML = `
+            <h2>Predictions</h2>
+            <div class="predictions">
+                ${result.predictions.map(prediction => `<span>${prediction}</span>`).join(" ")}
+            </div>
+            <h2>Evaluation</h2>
+            <div class="evaluation">${result.evaluation}</div>
+        `;
     } else {
         alert('Failed to process image: ' + result.error);
     }
