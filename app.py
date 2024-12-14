@@ -2,9 +2,10 @@ import os
 import cv2
 import numpy as np
 import base64
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from model import load_trained_model, get_label_mapping
 from main import segment_symbols, preprocess_symbol, predict_symbols, evaluate_expression
+
 
 app = Flask(__name__)
 
@@ -63,6 +64,11 @@ def process_image():
         "predictions": predicted_labels,
         "evaluation": expression_result
     })
+
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
+
 
 
 if __name__ == '__main__':
