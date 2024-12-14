@@ -44,6 +44,8 @@ def upload_image():
 def process_image():
     try:
         print("Processing image...")  # Debug log
+
+        # Check if the uploaded image exists
         file_path = os.path.join(UPLOAD_FOLDER, "drawn_expression.png")
         if not os.path.exists(file_path):
             print("File not found:", file_path)  # Debug log
@@ -56,25 +58,24 @@ def process_image():
             print("No symbols detected!")  # Debug log
             return jsonify({"error": "No symbols detected in the image."}), 400
 
-        # Predict each symbol
-        predictions = []
-        for i, sym in enumerate(symbol_imgs):
-            print(f"Processing symbol {i}...")  # Debug log
-            img_preprocessed = preprocess_symbol(sym)
-            predicted_label, probs = predict_symbol(model, img_preprocessed)
-            predictions.append({"label": predicted_label, "probs": probs.tolist()})
+        # Predict symbols using `predict_symbols()`
+        predictions = predict_symbols(symbol_imgs)
 
         # Evaluate the expression
         print("Evaluating expression...")  # Debug log
-        expression_result = evaluate_expression([(p["label"], p["probs"]) for p in predictions])
+        expression_result = evaluate_expression([(label, probs) for label, probs in predictions])
 
-        print("Predictions:", predictions)  # Debug log
+        # Format predictions for response
+        formatted_predictions = [{"label": label, "probs": probs.tolist()} for label, probs in predictions]
+
+        print("Predictions:", formatted_predictions)  # Debug log
         print("Evaluation Result:", expression_result)  # Debug log
 
         return jsonify({
-            "predictions": [p["label"] for p in predictions],
+            "predictions": [pred["label"] for pred in formatted_predictions],
             "evaluation": expression_result
         })
+
     except Exception as e:
         print("Error in /process:", str(e))  # Debug log
         return jsonify({"error": str(e)}), 500
