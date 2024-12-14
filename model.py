@@ -3,7 +3,9 @@ import tensorflow as tf
 import numpy as np
 
 # Define constants
-MODEL_PATH = "model.keras"  # Path to your Keras model
+# MODEL_PATH = "model.keras"  # Path to your Keras model4
+MODEL_PATH = os.path.join(os.path.dirname(__file__), 'model.keras')
+
 IMG_SIZE = 28              # Replace with the size used during training
 LABELS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'add', 'sub', 'mul', 'div']  # Modify based on your classes
 

@@ -162,25 +162,25 @@ def preprocess_symbol(symbol_img):
     return symbol_resized
 
 def predict_symbols(symbol_images):
-    """
-    Predict classes for each symbol image using the global model and label_to_class.
-    Expects symbol_images to be grayscale as returned by segment_symbols.
-    """
     predictions = []
     if not symbol_images:
         print("No symbols found to predict.")
         return predictions
 
     for i, sym in enumerate(symbol_images):
-        # Preprocess symbol before prediction
         img_preprocessed = preprocess_symbol(sym)
-        img_preprocessed = np.expand_dims(img_preprocessed, axis=0)  # shape (1, IMG_SIZE, IMG_SIZE, 1)
+        img_preprocessed = np.expand_dims(img_preprocessed, axis=0)  # (1, IMG_SIZE, IMG_SIZE, 1)
 
         pred = model.predict(img_preprocessed, verbose=0)
         class_idx = np.argmax(pred)
         class_label = label_to_class[class_idx]
+
+        # Log prediction details
+        print(f"Symbol {i}: Label = {class_label}, Probabilities = {pred[0]}")
+
         predictions.append((class_label, pred[0]))
     return predictions
+
 
 
 
