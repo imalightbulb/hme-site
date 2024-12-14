@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw Expression</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Draw a Mathematical Expression</h1>
+    <div id="canvas-controls">
+        <label for="canvasWidth">Width:</label>
+        <input id="canvasWidth" type="number" min="100" max="2000" value="800">
+        <label for="canvasHeight">Height:</label>
+        <input id="canvasHeight" type="number" min="100" max="1000" value="400">
+        <button onclick="resizeCanvas()">Resize</button>
+    </div>
+    <canvas id="drawCanvas" width="800" height="400"></canvas>
+    <div id="tools">
+        <button onclick="clearCanvas()">Clear</button>
+        <button onclick="uploadCanvas()">Upload</button>
+        <label for="lineThickness">Line Thickness:</label>
+        <input id="lineThickness" type="range" min="1" max="20" value="3">
+        <span id="lineThicknessValue">3</span>
+    </div>
+    <div id="result">
+        <div class="result-card">
+            <h2 class="section-title">Predictions</h2>
+            <div id="predictions" class="predictions-container"></div>
+        </div>
+        <div class="result-card">
+            <h2 class="section-title">Evaluation</h2>
+            <div id="evaluation" class="evaluation-container"></div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
